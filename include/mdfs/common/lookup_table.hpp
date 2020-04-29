@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "mdfs/common/writable.hpp"
+#include "mdfs/common/types.hpp"
 
 namespace mdfs { namespace common {
 
