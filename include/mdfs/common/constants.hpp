@@ -9,7 +9,7 @@ namespace mdfs { namespace common {
 const ClientId NULL_CLIENT_ID = 0;
 const ClientId MAX_CLIENT_ID = 0xffffff;
 
-inline bool validClientId(ClientId cid) { return cid > NULL_CLIENT_ID && cid <= MAX_CLIENT_ID; } 
+inline bool validClientId(ClientId cid) { return cid > NULL_CLIENT_ID && cid <= MAX_CLIENT_ID; }
 
 } // namespace common
 } // namespace mdfs
