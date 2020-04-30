@@ -12,28 +12,27 @@ private:
     std::unordered_map<std::string, INode*> m_children; // localname, ptr
 
 public:
-
-    INode * removeChild(std::string name) {
-        auto iter = m_children.find(name);
-        if (iter == m_children.end()) return nullptr;
-        m_children.erase(iter);
-        iter->second->setParent(nullptr);
-        return iter->second;
-    }
-
+    virtual ~INodeDirectory();
+    // node management functions
+    // remove this child node from subtree but not delete it.
+    INode * removeChild(std::string name);
     INode * removeChild(INode * node) {
         return removeChild(node->getName());
     }
-
-    bool insertChild(INode * node) {
-        if (m_children.find(node->getName()) != m_children.end()) {
-            std::cerr << node->getName() << " has already exists in " << this->absolutePath() << std::endl;
-            return false;
-        }
-        m_children[node->getName()] = node;
-        node->setParent(this);
-        return true;
+    bool insertChild(INode * node);
+    INode * getChild(std::string name) {
+        auto iter = m_children.find(name);
+        return (iter == m_children.end()) ? nullptr : iter->second;
     }
+
+    // block collection
+    virtual void destroyAndCollectBlocks(std::vector<common::Block> & vec);
+    virtual void collectBlocks(std::vector<common::Block> & vec) const;
+
+    // list
+    virtual std::string listSelf() const;
+
+    virtual void destroySubTree();
 };
 
 } // namespace namenode    

@@ -9,12 +9,14 @@
 #include "mdfs/common/permission.hpp"
 #include "mdfs/common/types.hpp"
 #include "mdfs/common/constants.hpp"
+#include "mdfs/common/block.hpp"
 // #include "mdfs/common/unique.hpp"
 
 namespace mdfs { namespace namenode {
 
 class INodeDirectory;
 
+// Abstract class for index node in file system.
 class INode {
 private:
     std::string m_name;
@@ -39,7 +41,7 @@ public:
 
     std::string getName() const { return m_name; }
     INode* getParentPtr() const { return m_parent; }
-    INode getParent() const { return *m_parent; }
+    // INode getParent() const { return *m_parent; }
     common::ClientId getClientId() const { return common::PermissionFormat::getClientId(m_permission); }
     common::GroupId getGroupId() const { return common::PermissionFormat::getGroupId(m_permission); }
     common::ModeType getMode() const { return common::PermissionFormat::getMode(m_permission); }
@@ -63,19 +65,35 @@ public:
     std::string absolutePath() const { 
         if (isRoot()) return m_name;
         return m_parent->absolutePath() + '/' + m_name;
-     }
-    virtual bool removeNode() {
+    }
+
+    // remove self from subtree.
+    bool removeNode() {
         if (m_parent) {
             INodeDirectory * parent = dynamic_cast<INodeDirectory*>(m_parent);
             if (parent) parent->removeChild(m_name);
             else return false;
             return true;
         }
-        return false;
+        return true;
     }
+
+    // delete the subtree (but not the root) and return all blocks.
+    virtual void destroyAndCollectBlocks(std::vector<common::Block> & vec) = 0;
+    virtual void collectBlocks(std::vector<common::Block> & vec) const = 0;
+
+    virtual std::string listSelf() const = 0;
+
+    virtual void destroySubTree() = 0;
 
     // std::shared_ptr<INode> copyPtr() const { return std::make_shared<INode>(this); }
 };
+
+void deleteINode(INode * node) {
+    node->removeNode();
+    node->destroySubTree();
+    delete node;
+}
 
 } // namespace namenode
 } // namespace mdfs
