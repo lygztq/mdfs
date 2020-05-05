@@ -3,16 +3,23 @@
 
 #include <iostream>
 #include <string>
+#include <fstream>
 
 namespace mdfs { namespace common {
 
-struct WritableInterface
+// can (store to/load from) disk using fstream 
+struct WritableInterface {
+    virtual void store(std::ofstream & ofs) const = 0;
+    virtual void load(std::ifstream & ifs) = 0;
+    virtual ~WritableInterface() {}
+};
+
+// can (output to/input from) a stream
+struct SerializableInterface : public WritableInterface
 {
     virtual void fromStream(std::istream & is) = 0;
     virtual void toStream(std::ostream & os) const = 0;
-    virtual void storeTo(const std::string & path) const = 0;
-    virtual void loadFrom(const std::string & path) = 0;
-    virtual ~WritableInterface() {}
+    virtual ~SerializableInterface() {}
 };
 
 } // namespace common

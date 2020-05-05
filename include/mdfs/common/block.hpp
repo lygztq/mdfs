@@ -11,6 +11,7 @@ namespace mdfs { namespace common {
 
 using BlockIdManager = IdManager<uint64_t>;
 
+// Block class used to describe a block
 class Block {
 public:
     Block() = default;

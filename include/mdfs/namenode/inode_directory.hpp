@@ -12,27 +12,30 @@ private:
     std::unordered_map<std::string, INode*> m_children; // localname, ptr
 
 public:
-    virtual ~INodeDirectory();
+    virtual ~INodeDirectory() override;
+
+    // =====================
+    // file tree operations
+    // =====================
+    virtual bool isDirectory() const override { return true; }
+    virtual bool isFile() const override { return false; }
+
+    // =====================
     // node management functions
+    // =====================
+
     // remove this child node from subtree but not delete it.
-    INode * removeChild(std::string name);
-    INode * removeChild(INode * node) {
-        return removeChild(node->getName());
-    }
-    bool insertChild(INode * node);
-    INode * getChild(std::string name) {
+    virtual INode * getChild(std::string name) const override {
         auto iter = m_children.find(name);
         return (iter == m_children.end()) ? nullptr : iter->second;
     }
-
-    // block collection
-    virtual void destroyAndCollectBlocks(std::vector<common::Block> & vec);
-    virtual void collectBlocks(std::vector<common::Block> & vec) const;
-
-    // list
-    virtual std::string listSelf() const;
-
-    virtual void destroySubTree();
+    virtual void destroyAndCollectBlocks(std::vector<common::Block> & vec) override;
+    virtual void collectBlocks(std::vector<common::Block> & vec) const override;
+    virtual std::string listSelf() const override;
+    virtual void destroySubTree() override;
+    virtual INode * removeChild(std::string name) override;
+    INode * removeChild(INode * node) { return removeChild(node->getName()); }
+    virtual bool insertChild(INode * node) override;
 };
 
 } // namespace namenode    

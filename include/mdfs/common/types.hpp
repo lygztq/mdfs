@@ -12,6 +12,7 @@ using BlockId = uint64_t;
 using INodeId = uint64_t;
 using ModeType = uint16_t;
 
+// operation status code
 enum class OperationStatusCode {
     SUCCESS = 0,
     FAILED,

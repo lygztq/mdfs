@@ -3,34 +3,38 @@
 namespace mdfs { namespace namenode {
 
 void INodeFile::addBlock(common::Block blk) {
-    while (tryUsing()) {
+    // while (tryUsing()) {
         if (blk.getNumBytes() > m_blockSize) {
             std::cerr << "Warning: wrong block size" << std::endl;
         }
         m_blocks.push_back(blk);
-    }
-    release();
+    // }
+    // release();
 }
 
 std::vector<common::Block> INodeFile::getBlocks() {
     std::vector<common::Block> blks;
-    while (tryUsing()) {
+    // while (tryUsing()) {
         blks = m_blocks;
-    }
-    release();
+    // }
+    // release();
     return blks;
 }
 
 void INodeFile::destroyAndCollectBlocks(std::vector<common::Block> & vec) {
-    while (tryUsing()) {
-        for (const auto & blk : m_blocks)
-            vec.push_back(blk);
-    }
-    release();
+    // while (tryUsing()) {
+    for (const auto & blk : m_blocks)
+        vec.push_back(blk);
+    // }
+    // release();
 }
 
-void INodeFile::collectBlocks(std::vector<common::Block> & vec) {
-    destroyAndCollectBlocks(vec);
+void INodeFile::collectBlocks(std::vector<common::Block> & vec) const {
+    // while (tryUsing()) {
+        for (const auto & blk : m_blocks)
+            vec.push_back(blk);
+    // }
+    // release();
 }
 
 std::string INodeFile::listSelf() const {

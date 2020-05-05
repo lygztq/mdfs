@@ -14,7 +14,16 @@ message DataNodeToClientMessage {
     bytes data = 2;
 }
 
-service ClientToDataNode {
+// transfer block between datanodes
+message DataNodeToDataNodeMessage {
+    BlockInfo block = 1;
+    bytes data = 2;
+    int32 command = 3; // read or write command defined in mdfs::common::DataTransferCommand
+}
+
+service DataNodeService {
+    rpc Communicate (DataNodeToDataNodeMessage) returns (DataNodeToDataNodeMessage);
+    
     // transfer a block between client and datanode
     rpc Transfer (ClientToDataNodeMessage) returns (DataNodeToClientMessage);
 }

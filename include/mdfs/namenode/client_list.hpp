@@ -14,7 +14,7 @@ namespace mdfs { namespace namenode {
 
 using ClientNameToId = common::LookUpTable<std::string, common::ClientId>;
 
-class ClientList : public common::WritableInterface {
+class ClientList : public common::SerializableInterface {
 private:
     std::vector<std::string> m_names; // vector of IP address
     ClientNameToId m_nameToId;
@@ -64,19 +64,23 @@ public:
         }
     }
 
-    // store
-    void storeTo(const std::string &path) const {
-        std::ofstream outSteam;
-        outSteam.open(path, std::ios::out);
-        this->toStream(outSteam);
-        outSteam.close();
-    }
-    void loadFrom(const std::string & path) {
-        std::ifstream inStream;
-        inStream.open(path, std::ios::in);
-        this->fromStream(inStream);
-        inStream.close();
-    }
+    // // store
+    // void storeTo(const std::string &path) const {
+    //     std::ofstream outSteam;
+    //     outSteam.open(path, std::ios::out);
+    //     this->toStream(outSteam);
+    //     outSteam.close();
+    // }
+    // void loadFrom(const std::string & path) {
+    //     std::ifstream inStream;
+    //     inStream.open(path, std::ios::in);
+    //     this->fromStream(inStream);
+    //     inStream.close();
+    // }
+
+    void store(std::ofstream & ofs) const {}
+
+    void load(std::ifstream & ifs) {}
 
     size_t length() const { return m_names.size(); }
 };

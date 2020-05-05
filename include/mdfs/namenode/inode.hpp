@@ -10,7 +10,7 @@
 #include "mdfs/common/types.hpp"
 #include "mdfs/common/constants.hpp"
 #include "mdfs/common/block.hpp"
-// #include "mdfs/common/unique.hpp"
+
 
 namespace mdfs { namespace namenode {
 
@@ -39,6 +39,9 @@ public:
     : m_name(name), m_parent(parent), m_permission(permission)
     , m_modificationTime(modificationTime), m_accessTime(accessTime) {}
 
+    // =====================
+    // get functions
+    // =====================
     std::string getName() const { return m_name; }
     INode* getParentPtr() const { return m_parent; }
     // INode getParent() const { return *m_parent; }
@@ -48,6 +51,9 @@ public:
     uint64_t getModificationTime() const { return m_modificationTime; }
     uint64_t getAccessTime() const { return m_accessTime; }
 
+    // =====================
+    // set functions
+    // =====================
     void setName(const std::string & name) { m_name = name; }
     void setParent(INode* parent) { m_parent = parent; }
     void setPermission(common::ClientId cid, common::GroupId gid, common::ModeType mode) { 
@@ -61,35 +67,44 @@ public:
     void updateModificationTime() { m_modificationTime = static_cast<uint64_t>(time(nullptr)); }
     void updateAccessTime() { m_accessTime = static_cast<uint64_t>(time(nullptr)); }
 
+
+    // =====================
+    // file tree operations
+    // =====================
+
+    // global constant functions
     bool isRoot() const { return m_name.size() == 0; }
+    virtual bool isDirectory() const = 0;
+    virtual bool isFile() const = 0;
+
     std::string absolutePath() const { 
         if (isRoot()) return m_name;
         return m_parent->absolutePath() + '/' + m_name;
     }
 
     // remove self from subtree.
-    bool removeNode() {
-        if (m_parent) {
-            INodeDirectory * parent = dynamic_cast<INodeDirectory*>(m_parent);
-            if (parent) parent->removeChild(m_name);
-            else return false;
-            return true;
-        }
-        return true;
+    void removeNode() {
+        if (m_parent)
+            m_parent->removeChild(m_name);
     }
 
     // delete the subtree (but not the root) and return all blocks.
     virtual void destroyAndCollectBlocks(std::vector<common::Block> & vec) = 0;
+    virtual INode* getChild(std::string childName) const = 0;
     virtual void collectBlocks(std::vector<common::Block> & vec) const = 0;
-
     virtual std::string listSelf() const = 0;
-
     virtual void destroySubTree() = 0;
+    virtual INode * removeChild(std::string name) = 0;
+    virtual bool insertChild(INode * node) = 0;
 
-    // std::shared_ptr<INode> copyPtr() const { return std::make_shared<INode>(this); }
+    // =====================
+    // file tree operations
+    // =====================
+    virtual void store(std::ofstream & ofs) const = 0;
+    virtual void load(std::ifstream & ifs) = 0;
 };
 
-void deleteINode(INode * node) {
+inline void deleteINode(INode * node) {
     node->removeNode();
     node->destroySubTree();
     delete node;

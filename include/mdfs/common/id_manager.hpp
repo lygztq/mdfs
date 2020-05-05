@@ -23,6 +23,8 @@ template uint64_t IdMax<uint64_t>();
 template uint32_t IdMax<uint32_t>();
 template uint16_t IdMax<uint16_t>();
 
+// A manager class used to generate
+// and manage id for objects.
 template <typename IdType>
 class IdManager {
 private:
@@ -78,7 +80,7 @@ public:
 
     // ofs must be binary
     void store(std::ofstream & ofs) {
-        IdType buffer = new IdType[m_idPool.size() + 2];
+        IdType * buffer = new IdType[m_idPool.size() + 2];
         buffer[0] = m_currentNumber;
         buffer[1] = static_cast<IdType>(m_idPool.size());
         size_t i = 2;

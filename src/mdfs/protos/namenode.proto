@@ -16,7 +16,19 @@ message NameNodeToClientMessage {
     repeated BlockInfo blockinfo = 2;
 }
 
-service ClientToNameNode {
+message DataNodeToNameNodeMessage {
+    uint64 spaceRemain = 1; // in number of byte
+    repeated uint64 badBlockIds = 2;
+    repeated uint64 updatedBlockIds = 3;
+}
+
+message NameNodeToDataNodeMessage {
+    int32 command = 1;              // command given by namenode, defined in mdfs::common::ManageCommand
+    repeated BlockInfo blocks = 2;  // block information for checksum or duplicate
+}
+
+service NameNodeService {
     // file system command
-    rpc Command (ClientToNameNodeMessage) returns (NameNodeToClientMessage) {}
+    rpc Command (ClientToNameNodeMessage) returns (NameNodeToClientMessage);
+    rpc Heartbeat (DataNodeToNameNodeMessage) returns (NameNodeToDataNodeMessage);
 }

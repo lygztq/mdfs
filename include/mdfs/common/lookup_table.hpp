@@ -12,7 +12,7 @@
 namespace mdfs { namespace common {
 
 template <typename KeyType, typename ValueType>
-class LookUpTable : public WritableInterface {
+class LookUpTable : public SerializableInterface {
 private:
     std::unordered_map<KeyType, ValueType> m_map;
 
@@ -28,6 +28,8 @@ public:
     }
     ValueType & operator[](const KeyType & key) { return m_map[key]; }
     const ValueType & operator[](const KeyType & key) const { return m_map[key]; }
+
+    void clear() { m_map.clear(); }
 
     // stream
     void fromStream(std::istream & is) {
@@ -47,18 +49,49 @@ public:
         }
     }
 
-    // store
-    void storeTo(const std::string &path) const {
-        std::ofstream outSteam;
-        outSteam.open(path, std::ios::out);
-        this->toStream(outSteam);
-        outSteam.close();
+    // // store
+    // void storeTo(const std::string &path) const {
+    //     std::ofstream outSteam;
+    //     outSteam.open(path, std::ios::out);
+    //     this->toStream(outSteam);
+    //     outSteam.close();
+    // }
+    // void loadFrom(const std::string & path) {
+    //     std::ifstream inStream;
+    //     inStream.open(path, std::ios::in);
+    //     this->fromStream(inStream);
+    //     inStream.close();
+    // }
+
+    void store(std::ofstream & ofs) const {
+        size_t length = m_map.size();
+        KeyType * keyBuffer = new KeyType[length];
+        ValueType * valueBuffer = new ValueType[length];
+        int count = 0;
+        for (const auto & item : m_map) {
+            keyBuffer[count] = item.first;
+            valueBuffer[count] = item.second;
+            ++count;
+        }
+        ofs.write((char *)&length, sizeof(size_t));
+        ofs.write((char *)keyBuffer, sizeof(KeyType) * length);
+        ofs.write((char *)valueBuffer, sizeof(ValueType) * length);
+        delete [] keyBuffer;
+        delete [] valueBuffer;
     }
-    void loadFrom(const std::string & path) {
-        std::ifstream inStream;
-        inStream.open(path, std::ios::in);
-        this->fromStream(inStream);
-        inStream.close();
+
+    void load(std::ifstream & ifs) {
+        size_t length = 0;
+        ifs.read((char *)&length, sizeof(size_t));
+        this->clear();
+        KeyType * keyBuffer = new KeyType[length];
+        ValueType * valueBuffer = new ValueType[length];
+        ifs.read((char *)keyBuffer, sizeof(KeyType) * length);
+        ifs.read((char *)valueBuffer, sizeof(ValueType) * length);
+        for (size_t i = 0; i<length; ++i)
+            m_map[keyBuffer[i]] = valueBuffer[i];
+        delete [] keyBuffer;
+        delete [] valueBuffer;
     }
 };
 
