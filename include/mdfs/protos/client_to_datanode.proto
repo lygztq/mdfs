@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package mdfs.message;
+import "mdfs/protos/block_info.proto";
+
+message ClientToDataNodeMessage {
+    int32 command = 1; // read or write command defined in mdfs::common::DataTransferCommand
+    BlockInfo block = 2;
+    bytes data = 3;
+}
+
+message DataNodeToClientMessage {
+    int32 status = 1;
+    bytes data = 2;
+}
+
+service ClientToDataNode {
+    // transfer a block between client and datanode
+    rpc Transfer (ClientToDataNodeMessage) returns (DataNodeToClientMessage);
+}

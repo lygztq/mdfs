@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package mdfs.message;
+import "mdfs/protos/block_info.proto";
+
+// message from clinet process to namenode
+// contains a user command and addresses.
+message ClientToNameNodeMessage {
+    int32 command = 1;      // enum command defined in mdfs::common::ClientCommand
+    string address = 2;     // first (also source) address for file operation
+    string des_address = 3; // second (also destination) address for file operation
+}
+
+message NameNodeToClientMessage {
+    int32 status = 1; // operation status
+    repeated BlockInfo blockinfo = 2;
+}
+
+service ClientToNameNode {
+    // file system command
+    rpc Command (ClientToNameNodeMessage) returns (NameNodeToClientMessage) {}
+}

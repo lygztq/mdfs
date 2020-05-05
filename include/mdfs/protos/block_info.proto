@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package mdfs.message;
+
+message BlockInfo {
+    uint64 id = 1;                  // block id
+    uint64 numBytes = 2;            // actual number of bytes in this block
+    uint64 stamp = 3;               // time stamp
+    repeated string datanode = 4;   // datanode ip address
+}

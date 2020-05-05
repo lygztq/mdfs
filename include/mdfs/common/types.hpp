@@ -13,7 +13,7 @@ using INodeId = uint64_t;
 using ModeType = uint16_t;
 
 enum class OperationStatusCode {
-    SUCCESS,
+    SUCCESS = 0,
     FAILED,
     UNKNOWN
 };
@@ -26,6 +26,34 @@ struct OperationStatus {
         strcpy(this->message, message);
         message_len = strlen(this->message);
     }
+};
+
+// command sent by client to namenode
+enum class ClientCommand {
+    NONE = 0,
+    READ = 1,
+    WRITE = 2,
+    REMOVE = 3,
+    CREATE = 4,
+    MKDIR = 5,
+    NEW_BLCOK = 6,
+    LIST = 7,
+    COPY = 8,
+    MOVE = 9
+};
+
+// command used for data transformation
+enum class DataTransferCommand {
+    READ,
+    WRITE
+};
+
+// command used by namenode to manage file system
+enum class ManageCommand {
+    DELETE,
+    READ_FROM,
+    WRITE_TO,
+    DO_CHECKSUM
 };
 
 } // namespace common
