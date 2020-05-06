@@ -5,30 +5,45 @@ import "mdfs/protos/block_info.proto";
 
 // message from clinet process to namenode
 // contains a user command and addresses.
-message ClientToNameNodeMessage {
+message ClientCommandMessage {
     int32 command = 1;      // enum command defined in mdfs::common::ClientCommand
     string address = 2;     // first (also source) address for file operation
     string des_address = 3; // second (also destination) address for file operation
 }
 
-message NameNodeToClientMessage {
+message ClientCommandReturnMessage {
     int32 status = 1; // operation status
     repeated BlockInfo blockinfo = 2;
 }
 
-message DataNodeToNameNodeMessage {
+message HeartbeatMessage {
     uint64 spaceRemain = 1; // in number of byte
-    repeated uint64 badBlockIds = 2;
-    repeated uint64 updatedBlockIds = 3;
 }
 
-message NameNodeToDataNodeMessage {
+message HeartbeatReturnMessage {
     int32 command = 1;              // command given by namenode, defined in mdfs::common::ManageCommand
     repeated BlockInfo blocks = 2;  // block information for checksum or duplicate
 }
 
+message ReportBlockMessage {
+    int32 status = 1;
+    BlockInfo blockinfo = 2;
+}
+
+message ReportBlockReturnMessage {
+    int32 status = 1;
+}
+
 service NameNodeService {
+    // from client to namenode
     // file system command
-    rpc Command (ClientToNameNodeMessage) returns (NameNodeToClientMessage);
-    rpc Heartbeat (DataNodeToNameNodeMessage) returns (NameNodeToDataNodeMessage);
+    rpc ClientCommand (ClientCommandMessage) returns (ClientCommandReturnMessage);
+
+    // from datanode to namenode
+    // tell namenode it still alive
+    rpc Heartbeat (HeartbeatMessage) returns (HeartbeatReturnMessage);
+
+    // from datanode to namenode
+    // report a block status after read failure or write
+    rpc ReportBlock (ReportBlockMessage) returns (ReportBlockReturnMessage);
 }

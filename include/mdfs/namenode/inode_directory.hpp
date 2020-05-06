@@ -36,6 +36,9 @@ public:
     virtual INode * removeChild(std::string name) override;
     INode * removeChild(INode * node) { return removeChild(node->getName()); }
     virtual bool insertChild(INode * node) override;
+
+    virtual void store(std::ofstream & ofs) const {}
+    virtual void load(std::ifstream & ifs) {}
 };
 
 } // namespace namenode    

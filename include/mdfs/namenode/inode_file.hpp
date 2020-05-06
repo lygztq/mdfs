@@ -44,6 +44,9 @@ public:
     virtual void destroySubTree() override;
     virtual INode * removeChild(std::string name) { return nullptr; }
     virtual bool insertChild(INode * node) { return false; }
+
+    virtual void store(std::ofstream & ofs) const {}
+    virtual void load(std::ifstream & ifs) {}
 };
 
 } // namespace namenode
