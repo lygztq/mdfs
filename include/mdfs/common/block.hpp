@@ -20,14 +20,19 @@ public:
     Block(int id, int numBytes, int stamp)
     : m_bid(id), m_numBytes(numBytes), m_stamp(stamp) {}
 
-    BlockId getId() { return m_bid; }
+    BlockId getId() const { return m_bid; }
     void setId(BlockId id) { m_bid = id; }
 
-    uint64_t getNumBytes() { return m_numBytes; }
+    uint64_t getNumBytes() const { return m_numBytes; }
     void setNumBytes(uint64_t num) { m_numBytes = num; }
 
-    uint64_t getStamp() { return m_stamp; }
+    uint64_t getStamp() const { return m_stamp; }
     void setStamp(uint64_t stamp) { m_stamp = stamp; }
+
+    // only compare Block id
+    bool operator== (const Block & b) const {
+        return b.m_bid == this->m_bid;
+    }
 
 private:
     BlockId m_bid;
@@ -40,7 +45,22 @@ public:
     static BlockIdManager m_idManager;
 };
 
+inline bool sameBlock(const Block & b1, const Block & b2) {
+    return b1 == b2 && b1.getId() == b2.getId() && b1.getNumBytes() == b2.getNumBytes();
+}
+
 } // namespace common
 } // namespace mdfs
+
+namespace std {
+
+template <>
+struct hash<mdfs::common::Block> {
+    size_t operator() (const mdfs::common::Block & b) const noexcept {
+        return hash<mdfs::common::BlockId>()(b.getId());
+    }
+};
+
+} // namespace std
 
 #endif // MDFS_COMMON_BLOCK_HPP_

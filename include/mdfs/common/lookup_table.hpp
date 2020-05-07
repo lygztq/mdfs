@@ -26,6 +26,7 @@ public:
     void insert(const KeyType & key, const ValueType & value) {
         if (!has(key)) m_map[key] = value;
     }
+    void erase(const KeyType & key) { m_map.erase(key); }
     ValueType & operator[](const KeyType & key) { return m_map[key]; }
     const ValueType & operator[](const KeyType & key) const { return m_map[key]; }
 

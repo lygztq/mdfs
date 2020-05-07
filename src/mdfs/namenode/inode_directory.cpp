@@ -33,20 +33,20 @@ bool INodeDirectory::insertChild(INode * node) {
     return true;
 }
 
-void INodeDirectory::destroyAndCollectBlocks(std::vector<common::Block> & vec) {
+void INodeDirectory::destroyAndCollectBlocks(std::unordered_map<common::Block, size_t> & collect_blks) {
     if (!m_children.empty()) {
         for (auto child : m_children) {
-            child.second->destroyAndCollectBlocks(vec);
+            child.second->destroyAndCollectBlocks(collect_blks);
             delete child.second;
         }
         m_children.clear();
     }
 }
 
-void INodeDirectory::collectBlocks(std::vector<common::Block> & vec) const {
+void INodeDirectory::collectBlocks(std::unordered_map<common::Block, size_t> & collect_blks) const {
     if (!m_children.empty()) {
-        for (const auto & child : m_children) {
-            child.second->collectBlocks(vec);
+        for (auto child : m_children) {
+            child.second->collectBlocks(collect_blks);
         }
     }
 }

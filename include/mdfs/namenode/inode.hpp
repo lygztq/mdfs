@@ -5,6 +5,7 @@
 #include <string>
 #include <ctime>
 #include <iostream>
+#include <unordered_map>
 
 #include "mdfs/common/permission.hpp"
 #include "mdfs/common/types.hpp"
@@ -48,6 +49,7 @@ public:
     common::ClientId getClientId() const { return common::PermissionFormat::getClientId(m_permission); }
     common::GroupId getGroupId() const { return common::PermissionFormat::getGroupId(m_permission); }
     common::ModeType getMode() const { return common::PermissionFormat::getMode(m_permission); }
+    uint64_t getPermission() const { return m_permission; }
     uint64_t getModificationTime() const { return m_modificationTime; }
     uint64_t getAccessTime() const { return m_accessTime; }
 
@@ -89,13 +91,15 @@ public:
     }
 
     // delete the subtree (but not the root) and return all blocks.
-    virtual void destroyAndCollectBlocks(std::vector<common::Block> & vec) = 0;
+    virtual void destroyAndCollectBlocks(std::unordered_map<common::Block, size_t> & collect_blks) = 0;
     virtual INode* getChild(std::string childName) const = 0;
-    virtual void collectBlocks(std::vector<common::Block> & vec) const = 0;
+    virtual void collectBlocks(std::unordered_map<common::Block, size_t> & collect_blks) const = 0;
     virtual std::string listSelf() const = 0;
     virtual void destroySubTree() = 0;
     virtual INode * removeChild(std::string name) = 0;
     virtual bool insertChild(INode * node) = 0;
+    virtual bool hasChild(std::string name) const { return false; }
+    virtual INode * deepcopy() const = 0;
 
     // =====================
     // file tree operations

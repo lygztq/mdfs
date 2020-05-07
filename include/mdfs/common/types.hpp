@@ -16,6 +16,11 @@ using ModeType = uint16_t;
 enum class OperationStatusCode {
     SUCCESS = 0,
     FAILED,
+    NOT_EXIST,
+    NOT_FILE,
+    NOT_DIR,
+    ALREADY_EXIST,
+    ROOT_ERROR, // cannot delete or move root
     UNKNOWN
 };
 
