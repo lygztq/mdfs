@@ -21,6 +21,7 @@ enum class OperationStatusCode {
     NOT_DIR,
     ALREADY_EXIST,
     ROOT_ERROR, // cannot delete or move root
+    WARNING,
     UNKNOWN
 };
 
